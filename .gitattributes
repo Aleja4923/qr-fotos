@@ -1,0 +1,5 @@
+* text=auto
+
+# Scripts que deben conservar saltos de línea LF
+.claude/skills/impeccable/scripts/impeccable text eol=lf
+*.sh text eol=lf

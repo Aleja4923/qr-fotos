@@ -2,8 +2,13 @@
  * Tokens del sistema "Perlas". Fuente: DESIGN.md (y Figma IMdVYCWxYC2X4Ogs1gQyvS, nodo 4-422).
  * Si cambias un valor aquí, cámbialo también en DESIGN.md.
  * Las fuentes se sirven desde el mismo dominio con Fontsource (ver docs/frontend-opcion-b.md),
- * solo con los pesos usados: Cormorant Garamond 600 y 600 cursiva; Montserrat 400, 500 y 600.
+ * solo con los pesos usados en DESIGN.md.
  */
+@import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/600-italic.css';
+@import '@fontsource/montserrat/400.css';
+@import '@fontsource/montserrat/500.css';
+@import '@fontsource/montserrat/600.css';
 
 :root {
   /* Colores (colección "Perlas") */
@@ -65,6 +70,10 @@
   --shadow-perla: 0 1px 2px rgba(120, 99, 69, 0.25);
 
   /* Componentes */
+  --boton-primario-fondo: var(--dorado-oscuro); /* blanco sobre dorado no cumple WCAG AA */
+  --boton-primario-texto: var(--blanco);
+  --boton-secundario-fondo: var(--superficie);
+  --boton-secundario-texto: var(--dorado-oscuro);
   --boton-alto: 56px;
   --boton-padding-x: 20px;
   --boton-borde: 1.5px;

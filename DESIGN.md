@@ -79,7 +79,7 @@ components:
     backgroundColor: "{colors.fondo}"
     textColor: "{colors.texto}"
   button-primary:
-    backgroundColor: "{colors.dorado}"
+    backgroundColor: "{colors.dorado-oscuro}"
     textColor: "{colors.blanco}"
     typography: "{typography.label-lg}"
     rounded: "{rounded.lg}"
@@ -167,12 +167,12 @@ Paleta "Perlas": neutros cálidos de papel y un solo acento dorado.
 - **crema (#f1e9dc):** Rellenos suaves: chip de mesa, miniaturas sin cargar.
 - **texto (#2f2a26):** Texto principal y títulos.
 - **texto-suave (#7a716a):** Etiquetas, tamaños de archivo, notas, metadatos.
-- **dorado (#a88a5a):** El único color de acción: botón primario, progreso, ampersand, viñetas.
-- **dorado-oscuro (#6e5634):** Texto sobre crema o blanco cuando debe leerse como dorado (chip, botón secundario, etiquetas).
+- **dorado (#a88a5a):** Acento de marca: progreso, ampersand, viñetas, círculo de confirmación. No lleva texto blanco encima (contraste 3.26:1).
+- **dorado-oscuro (#6e5634):** Fondo del botón primario (texto blanco, cumple WCAG AA) y texto sobre crema o blanco cuando debe leerse como dorado (chip, botón secundario, etiquetas).
 - **borde (#e7dfd3):** Bordes de tarjetas y campos.
 - **borde-dorado (#e2d4bd):** Bordes del botón secundario y del chip de mesa.
 - **verde (#7e9c6e):** Solo para estado "subida completa" (check de la fila).
-- **blanco (#ffffff):** Texto e iconos sobre dorado, verde u oscuro.
+- **blanco (#ffffff):** Texto e iconos sobre dorado-oscuro, verde u oscuro; iconos (no texto) sobre dorado.
 - **oscuro (#1e1b18):** Fondo del visor de foto abierta.
 
 ## Typography
@@ -214,7 +214,7 @@ las tarjetas se separan del fondo con borde de 1 px.
 
 ## Components
 
-- **Botón primario:** fondo dorado, texto blanco Montserrat 16 px semibold, alto 56 px,
+- **Botón primario:** fondo dorado-oscuro, texto blanco Montserrat 16 px semibold, alto 56 px,
   radio 16 px, icono de 22 px a 10 px del texto, sombra dorada. Solo para la acción de subir
   (y descargar en el visor). Uno por pantalla.
 - **Botón secundario:** fondo blanco, borde 1.5 px borde-dorado, texto dorado-oscuro, mismas
@@ -237,7 +237,7 @@ las tarjetas se separan del fondo con borde de 1 px.
 ## Do's and Don'ts
 
 - Usa siempre los tokens de `src/styles/tokens.css`; no escribas colores ni medidas sueltas.
-- Usa el dorado solo para la acción principal y el progreso.
+- Usa el dorado-oscuro para la acción principal y el dorado solo como acento (progreso, detalles); nunca texto blanco sobre dorado.
 - Mantén textos grandes y claros; los invitados leen con poca luz y con prisa.
 - No uses degradados morados (ni ningún degradado de fondo ajeno a la paleta).
 - No uses sombras grandes ni oscuras; solo las dos sombras doradas descritas.

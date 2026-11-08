@@ -6,7 +6,7 @@ Worker de Cloudflare con static assets, R2. Detalle en docs/frontend-opcion-b.md
 
 ## Diseño
 - Antes de cualquier pantalla, lee @DESIGN.md y usa solo sus tokens (src/styles/tokens.css).
-- Si cambias DESIGN.md, corre: npx @google/design.md lint DESIGN.md
+- Si cambias DESIGN.md, corre: npx -p @google/design.md designmd lint DESIGN.md
 - La fuente de verdad es el Figma: https://www.figma.com/design/IMdVYCWxYC2X4Ogs1gQyvS?node-id=4-422
 - Para cada pantalla usa el MCP de Figma (get_design_context) y adapta el código a los
   componentes del proyecto; no copies el código de referencia tal cual.
