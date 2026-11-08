@@ -1,0 +1,90 @@
+/*
+ * Tokens del sistema "Perlas". Fuente: DESIGN.md (y Figma IMdVYCWxYC2X4Ogs1gQyvS, nodo 4-422).
+ * Si cambias un valor aquí, cámbialo también en DESIGN.md.
+ * Las fuentes se sirven desde el mismo dominio con Fontsource (ver docs/frontend-opcion-b.md),
+ * solo con los pesos usados: Cormorant Garamond 600 y 600 cursiva; Montserrat 400, 500 y 600.
+ */
+
+:root {
+  /* Colores (colección "Perlas") */
+  --texto: #2f2a26;
+  --dorado: #a88a5a;
+  --dorado-oscuro: #6e5634;
+  --crema: #f1e9dc;
+  --borde-dorado: #e2d4bd;
+  --texto-suave: #7a716a;
+  --superficie: #ffffff;
+  --borde: #e7dfd3;
+  --blanco: #ffffff;
+  --fondo: #faf7f2;
+  --verde: #7e9c6e;
+  --oscuro: #1e1b18;
+  --primary: var(--dorado);
+
+  /* Familias */
+  --font-titulo: 'Cormorant Garamond', serif;
+  --font-texto: 'Montserrat', sans-serif;
+
+  /* Tipografía: tamaño / peso / interlineado */
+  --text-display: 46px;
+  --text-display-lh: 1.05;
+  --text-headline: 38px;
+  --text-title: 28px;
+  --text-eyebrow: 12px;
+  --text-eyebrow-tracking: 3px;
+  --text-body: 15px;
+  --text-body-lh: 1.5;
+  --text-label-lg: 16px;
+  --text-label-md: 14px;
+  --text-label-sm: 13px;
+  --text-caption: 12.5px;
+  --text-tag: 10px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Radios */
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Espaciado */
+  --space-xxs: 4px;
+  --space-xs: 6px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 24px;
+  --space-page: 28px;
+
+  /* Sombras (las únicas permitidas) */
+  --shadow-boton: 0 6px 8px rgba(168, 138, 89, 0.35);
+  --shadow-check: 0 10px 24px rgba(168, 138, 89, 0.35);
+  --shadow-perla: 0 1px 2px rgba(120, 99, 69, 0.25);
+
+  /* Componentes */
+  --boton-alto: 56px;
+  --boton-padding-x: 20px;
+  --boton-borde: 1.5px;
+  --boton-icono: 22px;
+  --input-alto: 50px;
+  --input-padding-x: 16px;
+  --input-borde: 1.5px;
+  --chip-padding: 7px 14px;
+  --miniatura-ancho: 124px;
+  --miniatura-alto: 126px;
+  --miniatura-gap: 4px;
+  --etiqueta-padding: 3px 7px;
+  --etiqueta-fondo: rgba(255, 255, 255, 0.85);
+  --insignia-video-fondo: rgba(47, 42, 38, 0.6);
+  --fila-padding: 12px;
+  --fila-gap: 12px;
+  --fila-miniatura: 56px;
+  --fila-check: 28px;
+  --progreso-alto: 6px;
+  --progreso-pista: #efe8dd;
+  --collar-ancho: 130px;
+  --collar-alto: 14px;
+}
