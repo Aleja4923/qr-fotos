@@ -7,11 +7,11 @@ Worker de Cloudflare con static assets, R2. Detalle en docs/frontend-opcion-b.md
 ## Diseño
 - Antes de cualquier pantalla, lee @DESIGN.md y usa solo sus tokens (src/styles/tokens.css).
 - Si cambias DESIGN.md, corre: npx -p @google/design.md designmd lint DESIGN.md
-- La fuente de verdad es el Figma: https://www.figma.com/design/IMdVYCWxYC2X4Ogs1gQyvS?node-id=4-422
-- Para cada pantalla usa el MCP de Figma (get_design_context) y adapta el código a los
-  componentes del proyecto; no copies el código de referencia tal cual.
-- Lo que no está en Figma (panel, errores, galería vacía) se diseña con /impeccable,
-  respetando DESIGN.md.
+- La referencia visual es la invitación impresa (foto en docs/). Lee también @PRODUCT.md y la
+  dirección en .impeccable/surfaces/src-app-svelte.md. El Figma anterior quedó descartado como
+  dirección visual; solo sirve como inventario de contenido.
+- Lo nuevo (panel, errores, galería vacía) se diseña con /impeccable dentro del mundo de la
+  invitación, respetando DESIGN.md.
 
 ## Svelte
 - Consulta la documentación con el MCP de Svelte antes de escribir componentes.

@@ -33,3 +33,11 @@ lerna-debug.log*
 .claude/settings.local.json
 .impeccable/config.local.json
 .impeccable/hook.cache.json
+
+# Capturas y registros de Playwright MCP
+.playwright-mcp/
+
+# Foto de la invitación: tiene datos personales, solo como referencia local
+docs/*.jpeg
+docs/*.jpg
+docs/*.png

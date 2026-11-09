@@ -60,6 +60,18 @@ typography:
     fontFamily: Montserrat
     fontSize: 10px
     fontWeight: 600
+  badge:
+    fontFamily: Montserrat
+    fontSize: 11px
+    fontWeight: 600
+  label-xl:
+    fontFamily: Montserrat
+    fontSize: 17px
+    fontWeight: 600
+  summary:
+    fontFamily: Montserrat
+    fontSize: 22px
+    fontWeight: 600
 rounded:
   sm: 12px
   md: 14px
@@ -92,6 +104,21 @@ components:
     rounded: "{rounded.lg}"
     height: 56px
     padding: 0 20px
+  button-dark:
+    backgroundColor: "{colors.texto}"
+    textColor: "{colors.blanco}"
+    typography: "{typography.label-lg}"
+    rounded: "{rounded.lg}"
+    height: 56px
+  filter-chip:
+    backgroundColor: "{colors.superficie}"
+    textColor: "{colors.texto-suave}"
+    typography: "{typography.label-sm}"
+    rounded: "{rounded.full}"
+    padding: 8px 14px
+  filter-chip-active:
+    backgroundColor: "{colors.texto}"
+    textColor: "{colors.blanco}"
   button-secondary-border:
     backgroundColor: "{colors.borde-dorado}"
   chip-mesa:
@@ -230,6 +257,10 @@ las tarjetas se separan del fondo con borde de 1 px.
   en la versión de 130 × 14 px). Cada perla con degradado radial blanco → #f3eee7 → #d8cfc3
   y sombra mínima. Es un SVG fijo: se escala completo, nunca se redibuja. Va centrado sobre
   los nombres, sobre la confirmación y al lado del título de la galería.
+- **Botón oscuro:** fondo texto, texto blanco, mismas medidas que el primario. Solo en el visor
+  ("Anterior"), junto al botón primario.
+- **Filtro:** píldora blanca con borde, texto 13 px semibold texto-suave; activo con fondo texto y
+  texto blanco. La fila se desliza de lado si no cabe.
 - **Chip de mesa:** píldora crema, borde borde-dorado, texto 13 px semibold dorado-oscuro.
 - **Campo de texto:** blanco, borde 1.5 px, radio 14 px, alto 50 px; etiqueta 12 px semibold
   texto-suave arriba con 6 px de separación.

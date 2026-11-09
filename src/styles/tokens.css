@@ -1,99 +1,90 @@
 /*
- * Tokens del sistema "Perlas". Fuente: DESIGN.md (y Figma IMdVYCWxYC2X4Ogs1gQyvS, nodo 4-422).
- * Si cambias un valor aquí, cámbialo también en DESIGN.md.
- * Las fuentes se sirven desde el mismo dominio con Fontsource (ver docs/frontend-opcion-b.md),
- * solo con los pesos usados en DESIGN.md.
+ * Tokens del mundo "La invitación": la página continúa la papelería impresa de Javier & Patricia
+ * (papel marfil nacarado, tinta café, marcos rosados y perlas).
+ * Fuentes servidas desde el mismo dominio con Fontsource.
  */
+@import '@fontsource/bodoni-moda/400-italic.css';
+@import '@fontsource/pinyon-script/400.css';
+@import '@fontsource/cormorant-garamond/400.css';
+@import '@fontsource/cormorant-garamond/400-italic.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/500-italic.css';
 @import '@fontsource/cormorant-garamond/600.css';
-@import '@fontsource/cormorant-garamond/600-italic.css';
-@import '@fontsource/montserrat/400.css';
-@import '@fontsource/montserrat/500.css';
-@import '@fontsource/montserrat/600.css';
+@import '@fontsource/jost/400.css';
+@import '@fontsource/jost/500.css';
+@import '@fontsource/jost/600.css';
 
 :root {
-  /* Colores (colección "Perlas") */
-  --texto: #2f2a26;
-  --dorado: #a88a5a;
-  --dorado-oscuro: #6e5634;
-  --crema: #f1e9dc;
-  --borde-dorado: #e2d4bd;
-  --texto-suave: #7a716a;
-  --superficie: #ffffff;
-  --borde: #e7dfd3;
-  --blanco: #ffffff;
-  --fondo: #faf7f2;
-  --verde: #7e9c6e;
-  --oscuro: #1e1b18;
-  --primary: var(--dorado);
+  /* Papel nacarado */
+  --papel: #f7f2ea;
+  --papel-hondo: #ede3d4;
+  --nacar-rosa: #f4e2de;
+  --nacar-azul: #e3ebec;
+  --nacar-lila: #ebe3ef;
+
+  /* Tinta */
+  --tinta: #3b2a22;
+  --tinta-suave: #6b564c;
+  --rosa: #c9a196; /* filetes y marcos, nunca texto */
+  --rosa-tinta: #8a5a4f; /* texto rosado sobre papel */
+
+  /* Perlas */
+  --perla-luz: #ffffff;
+  --perla: #f3eee8;
+  --perla-sombra: #c8bbb0;
+  --perla-filete: rgba(59, 42, 34, 0.2);
+  --perla-mate: #e8ddcf; /* perla todavía sin encender */
+
+  /* Noche (visor de fotos) */
+  --noche: #261c17;
+  --noche-alta: #3a2c25;
+  --noche-texto-suave: #d8c2b9;
 
   /* Familias */
-  --font-titulo: 'Cormorant Garamond', serif;
-  --font-texto: 'Montserrat', sans-serif;
+  --font-numero: 'Bodoni Moda', serif; /* el "30" y los conteos grandes */
+  --font-caligrafia: 'Pinyon Script', cursive; /* solo nombres, "¡Gracias!" y monograma */
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-ui: 'Jost', sans-serif;
 
-  /* Tipografía: tamaño / peso / interlineado */
-  --text-display: 46px;
-  --text-display-lh: 1.05;
-  --text-headline: 38px;
-  --text-title: 28px;
-  --text-eyebrow: 12px;
-  --text-eyebrow-tracking: 3px;
-  --text-body: 15px;
-  --text-body-lh: 1.5;
-  --text-label-lg: 16px;
-  --text-label-md: 14px;
-  --text-label-sm: 13px;
-  --text-caption: 12.5px;
-  --text-tag: 10px;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-
-  /* Radios */
-  --radius-sm: 12px;
-  --radius-md: 14px;
-  --radius-lg: 16px;
-  --radius-full: 999px;
+  /* Tamaños */
+  --t-treinta: 124px;
+  --t-cuenta: 96px;
+  --t-nombres: 48px;
+  --t-ocasion: 22px;
+  --t-gracias: 50px;
+  --t-titulo: 38px;
+  --t-serif: 22px;
+  --t-resumen: 24px;
+  --t-cuerpo: 17px;
+  --t-boton: 18px;
+  --t-dato: 15px;
+  --t-pequeno: 15px;
+  --lh-cuerpo: 1.5;
 
   /* Espaciado */
-  --space-xxs: 4px;
-  --space-xs: 6px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
-  --space-xxl: 24px;
-  --space-page: 28px;
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-5: 24px;
+  --e-6: 32px;
+  --e-7: 48px;
+  --margen: 24px;
 
-  /* Sombras (las únicas permitidas) */
-  --shadow-boton: 0 6px 8px rgba(168, 138, 89, 0.35);
-  --shadow-check: 0 10px 24px rgba(168, 138, 89, 0.35);
-  --shadow-perla: 0 1px 2px rgba(120, 99, 69, 0.25);
+  /* Formas */
+  --r-redondo: 999px;
+  --r-foto: 4px;
+  --r-aviso: 18px;
+
+  /* Sombras (cálidas, con desplazamiento) */
+  --sombra-perla: 0 1px 1.5px rgba(59, 42, 34, 0.28);
+  --sombra-boton: 0 10px 22px -10px rgba(59, 42, 34, 0.55);
+  --sombra-boton-pulsado: 0 4px 10px -6px rgba(59, 42, 34, 0.55);
 
   /* Componentes */
-  --boton-primario-fondo: var(--dorado-oscuro); /* blanco sobre dorado no cumple WCAG AA */
-  --boton-primario-texto: var(--blanco);
-  --boton-secundario-fondo: var(--superficie);
-  --boton-secundario-texto: var(--dorado-oscuro);
-  --boton-alto: 56px;
-  --boton-padding-x: 20px;
-  --boton-borde: 1.5px;
-  --boton-icono: 22px;
-  --input-alto: 50px;
-  --input-padding-x: 16px;
-  --input-borde: 1.5px;
-  --chip-padding: 7px 14px;
-  --miniatura-ancho: 124px;
-  --miniatura-alto: 126px;
-  --miniatura-gap: 4px;
-  --etiqueta-padding: 3px 7px;
-  --etiqueta-fondo: rgba(255, 255, 255, 0.85);
-  --insignia-video-fondo: rgba(47, 42, 38, 0.6);
-  --fila-padding: 12px;
-  --fila-gap: 12px;
-  --fila-miniatura: 56px;
-  --fila-check: 28px;
-  --progreso-alto: 6px;
-  --progreso-pista: #efe8dd;
-  --collar-ancho: 130px;
-  --collar-alto: 14px;
+  --boton-alto: 60px;
+  --toque: 48px;
+
+  /* Movimiento */
+  --salida: cubic-bezier(0.23, 1, 0.32, 1);
 }

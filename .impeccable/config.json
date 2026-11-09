@@ -2,13 +2,6 @@
   "detector": {
     "ignoreRules": [],
     "ignoreFiles": [],
-    "ignoreValues": [
-      {
-        "rule": "overused-font",
-        "value": "montserrat",
-        "createdAt": "2026-11-08T23:20:37.853Z",
-        "reason": "user specified: Montserrat is the body font required by the user's request and the Figma source of truth (IMdVYCWxYC2X4Ogs1gQyvS, node 4-422)"
-      }
-    ]
+    "ignoreValues": []
   }
 }
