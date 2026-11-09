@@ -54,3 +54,6 @@ export function perlasCorazon(n: number): PerlaCorazon[] {
   }
   return orden;
 }
+
+/** Perlas que caben en el corazón. Con más fotos, el corazón queda lleno y el número sigue subiendo. */
+export const PERLAS_DEL_CORAZON = 60;

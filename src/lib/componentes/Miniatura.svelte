@@ -1,25 +1,36 @@
 <script lang="ts">
   import Icono from './Icono.svelte';
-  import type { Foto } from '../mock';
+  import type { Foto } from '../api';
+  import { duracion } from '../formato';
 
   interface Props {
     foto: Foto;
-    href: string;
   }
 
-  let { foto, href }: Props = $props();
+  let { foto }: Props = $props();
+
+  let fallo = $state(false);
+  let etiqueta = $derived(
+    [
+      foto.tipo === 'video' ? 'Video' : 'Foto',
+      foto.autor ? `de ${foto.autor}` : null,
+      foto.mesa !== null ? `mesa ${foto.mesa}` : null,
+    ]
+      .filter(Boolean)
+      .join(', '),
+  );
 </script>
 
-<!-- Mockup: el relleno de color reemplaza la foto real hasta conectar la galería. -->
-<a
-  class="miniatura"
-  {href}
-  style:background="var(--{foto.tono})"
-  aria-label="{foto.video ? 'Video' : 'Foto'} de la mesa {foto.mesa}"
->
-  <span class="icono"><Icono nombre="imagen" tamano={26} /></span>
-  {#if foto.video}
-    <span class="video"><Icono nombre="play" tamano={12} />{foto.video}</span>
+<a class="miniatura" href="#foto/{foto.id}" aria-label={etiqueta}>
+  {#if foto.mini && !fallo}
+    <img src={foto.mini} alt="" loading="lazy" decoding="async" width="400" height="400" onerror={() => (fallo = true)} />
+  {:else}
+    <span class="icono"><Icono nombre={foto.tipo === 'video' ? 'play' : 'imagen'} tamano={26} /></span>
+  {/if}
+  {#if foto.tipo === 'video'}
+    <span class="video">
+      <Icono nombre="play" tamano={12} />{foto.duracion !== null ? duracion(foto.duracion) : 'Video'}
+    </span>
   {/if}
 </a>
 
@@ -31,8 +42,23 @@
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: var(--r-foto);
-    /* Filete rosado, como una foto montada en la tarjeta. */
+    background: var(--papel-hondo);
+  }
+
+  /* Filete rosado, como una foto montada en la tarjeta. Va encima de la imagen. */
+  .miniatura::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rosa) 70%, transparent);
+    pointer-events: none;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .icono {
@@ -41,19 +67,19 @@
 
   .video {
     position: absolute;
-    border-radius: var(--r-redondo);
-    font-size: var(--t-pequeno);
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
     bottom: 6px;
     left: 6px;
     display: flex;
     align-items: center;
     gap: 4px;
     padding: 5px 8px;
+    border-radius: var(--r-redondo);
     background: color-mix(in srgb, var(--noche) 78%, transparent);
     color: var(--papel);
+    font-size: var(--t-pequeno);
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
+    white-space: nowrap;
   }
 </style>

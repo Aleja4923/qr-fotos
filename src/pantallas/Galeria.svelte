@@ -1,45 +1,77 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Boton from '../lib/componentes/Boton.svelte';
   import CorazonPerlas from '../lib/componentes/CorazonPerlas.svelte';
+  import Icono from '../lib/componentes/Icono.svelte';
   import Miniatura from '../lib/componentes/Miniatura.svelte';
-  import { filtros, fotos, fotosSubidas, perlasDelCorazon } from '../lib/mock';
+  import { PERLAS_DEL_CORAZON } from '../lib/corazon';
+  import { galeria, type Filtro } from '../lib/galeria.svelte';
+  import { subirArchivos } from '../lib/subidas.svelte';
 
-  // Mockup: el filtro solo cambia de aspecto; todavía no filtra.
-  let activo = $state('Todas');
+  onMount(() => galeria.seguir());
+
+  let filtros = $derived<{ valor: Filtro; texto: string }[]>([
+    { valor: 'todas', texto: 'Todas' },
+    ...(galeria.hayVideos ? [{ valor: 'videos' as const, texto: 'Videos' }] : []),
+    ...galeria.mesas.map((m) => ({ valor: m, texto: `Mesa ${m}` })),
+  ]);
 </script>
 
 <main class="pantalla">
   <header class="encabezado">
-    <div>
-      <h1>Galería</h1>
-      <p>Las fotos y videos de la fiesta</p>
+    <div class="titulo">
+      <a href="#inicio" class="atras" aria-label="Volver al inicio"><Icono nombre="atras" /></a>
+      <div>
+        <h1>Galería</h1>
+        <p>Las fotos y videos de la fiesta</p>
+      </div>
     </div>
-    <CorazonPerlas capacidad={perlasDelCorazon} encendidas={fotosSubidas} ancho={88} animar={false}>
-      <span class="cuenta">{fotosSubidas}</span>
+    <CorazonPerlas capacidad={PERLAS_DEL_CORAZON} encendidas={galeria.fotos.length} ancho={88} animar={false}>
+      <span class="cuenta">{galeria.fotos.length}</span>
     </CorazonPerlas>
   </header>
 
-  <div class="filtros" role="group" aria-label="Filtrar galería">
-    {#each filtros as filtro (filtro)}
-      <button
-        type="button"
-        class={['filtro', { activo: filtro === activo }]}
-        aria-pressed={filtro === activo}
-        onclick={() => (activo = filtro)}
-      >
-        {filtro}
-      </button>
-    {/each}
-  </div>
+  {#if galeria.estado === 'cargando'}
+    <p class="mensaje" role="status">Buscando las fotos…</p>
+  {:else if galeria.estado === 'error'}
+    <div class="mensaje" role="status">
+      <p>No pudimos traer las fotos. Puede ser la señal del salón.</p>
+      <button type="button" class="reintentar" onclick={() => galeria.actualizar()}>Intentar de nuevo</button>
+    </div>
+  {:else if galeria.fotos.length === 0}
+    <div class="mensaje">
+      <p class="vacia">Todavía no hay fotos.</p>
+      <p>Las primeras perlas del corazón pueden ser las tuyas.</p>
+    </div>
+  {:else}
+    {#if filtros.length > 2}
+      <div class="filtros" role="group" aria-label="Filtrar galería">
+        {#each filtros as filtro (filtro.valor)}
+          <button
+            type="button"
+            class={['filtro', { activo: filtro.valor === galeria.filtro }]}
+            aria-pressed={filtro.valor === galeria.filtro}
+            onclick={() => (galeria.filtro = filtro.valor)}
+          >
+            {filtro.texto}
+          </button>
+        {/each}
+      </div>
+    {/if}
 
-  <div class="cuadricula">
-    {#each fotos as foto (foto.id)}
-      <Miniatura {foto} href="#foto" />
-    {/each}
-  </div>
+    {#if galeria.visibles.length === 0}
+      <p class="mensaje">No hay fotos con este filtro todavía.</p>
+    {:else}
+      <div class="cuadricula">
+        {#each galeria.visibles as foto (foto.id)}
+          <Miniatura {foto} />
+        {/each}
+      </div>
+    {/if}
+  {/if}
 
   <div class="flotante">
-    <Boton icono="mas" href="#inicio">Subir mis fotos</Boton>
+    <Boton icono="mas" onarchivos={subirArchivos}>Subir mis fotos</Boton>
   </div>
 </main>
 
@@ -56,6 +88,23 @@
     justify-content: space-between;
     gap: var(--e-4);
     padding: calc(var(--e-4) + env(safe-area-inset-top)) var(--margen) var(--e-4);
+  }
+
+  .titulo {
+    display: flex;
+    align-items: center;
+    gap: var(--e-1);
+    min-width: 0;
+    margin-left: -12px;
+  }
+
+  .atras {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--toque);
+    height: var(--toque);
+    border-radius: var(--r-redondo);
   }
 
   h1 {
@@ -112,6 +161,37 @@
     grid-template-columns: repeat(3, 1fr);
     gap: var(--e-2);
     padding: var(--e-1) var(--e-4) 0;
+  }
+
+  .mensaje {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--e-3);
+    padding: var(--e-7) var(--margen) 0;
+    color: var(--tinta-suave);
+    font-size: var(--t-cuerpo);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .vacia {
+    color: var(--tinta);
+    font-family: var(--font-serif);
+    font-size: var(--t-resumen);
+    font-style: italic;
+  }
+
+  .reintentar {
+    min-height: var(--toque);
+    padding: 0 var(--e-5);
+    border: 1px solid var(--rosa);
+    border-radius: var(--r-redondo);
+    background: transparent;
+    color: var(--tinta);
+    font-size: var(--t-dato);
+    font-weight: 600;
+    cursor: pointer;
   }
 
   .flotante {

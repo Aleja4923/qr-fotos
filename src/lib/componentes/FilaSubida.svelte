@@ -2,29 +2,57 @@
   import HiloPerlas from './HiloPerlas.svelte';
   import Icono from './Icono.svelte';
   import Perla from './Perla.svelte';
-  import type { Subida } from '../mock';
+  import { duracion, tamano } from '../formato';
+  import { subidas, type Subida } from '../subidas.svelte';
 
   interface Props {
     subida: Subida;
   }
 
   let { subida }: Props = $props();
+
+  let detalle = $derived(
+    subida.duracion !== null ? `${tamano(subida.tamano)} · ${duracion(subida.duracion)}` : tamano(subida.tamano),
+  );
+  let enCamino = $derived(subida.estado === 'subiendo' || subida.estado === 'guardando');
 </script>
 
 <li class={['fila', subida.estado]}>
-  <span class="miniatura"><Icono nombre="imagen" tamano={22} /></span>
+  <span class="miniatura">
+    {#if subida.vista}
+      <img src={subida.vista} alt="" />
+    {:else}
+      <Icono nombre={subida.tipo === 'video' ? 'play' : 'imagen'} tamano={22} />
+    {/if}
+  </span>
 
   <div class="info">
     <div class="linea">
       <p class="nombre">{subida.nombre}</p>
-      <p class="tamano">{subida.tamano}</p>
+      <p class="tamano">{detalle}</p>
     </div>
-    {#if subida.estado === 'subiendo'}
+
+    {#if enCamino}
       <HiloPerlas valor={subida.progreso} etiqueta="Subiendo {subida.nombre}" />
+    {:else if subida.estado === 'error' || subida.estado === 'rechazada'}
+      <div class="problema">
+        <p class="estado" role="status">{subida.motivo}</p>
+        {#if subida.estado === 'error'}
+          <button type="button" class="accion" onclick={() => subidas.reintentar(subida.id)}>Reintentar</button>
+        {:else}
+          <button type="button" class="accion" onclick={() => subidas.quitar(subida.id)}>Quitar</button>
+        {/if}
+      </div>
     {:else}
       <p class="estado">
         <Perla encendida={subida.estado === 'lista'} tamano={16} />
-        {subida.estado === 'lista' ? 'Subida' : 'En espera'}
+        {#if subida.estado === 'lista'}
+          Subida
+        {:else if subida.estado === 'preparando'}
+          Preparando…
+        {:else}
+          {subida.motivo ?? 'En espera'}
+        {/if}
       </p>
     {/if}
   </div>
@@ -48,10 +76,21 @@
     flex-shrink: 0;
     width: 56px;
     height: 56px;
+    overflow: hidden;
     border-radius: var(--r-redondo);
     background: var(--papel-hondo);
     color: var(--rosa-tinta);
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rosa) 60%, transparent);
+  }
+
+  .miniatura img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .rechazada .miniatura img {
+    opacity: 0.45;
   }
 
   .info {
@@ -95,5 +134,30 @@
 
   .lista .estado {
     color: var(--rosa-tinta);
+  }
+
+  .problema {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e-3);
+  }
+
+  .error .estado,
+  .rechazada .estado {
+    color: var(--rosa-tinta);
+  }
+
+  .accion {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 0 var(--e-4);
+    border: 1px solid var(--rosa);
+    border-radius: var(--r-redondo);
+    background: transparent;
+    color: var(--tinta);
+    font-size: var(--t-dato);
+    font-weight: 600;
+    cursor: pointer;
   }
 </style>

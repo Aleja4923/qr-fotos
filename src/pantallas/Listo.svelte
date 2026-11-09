@@ -2,50 +2,69 @@
   import { onMount } from 'svelte';
   import Boton from '../lib/componentes/Boton.svelte';
   import CorazonPerlas from '../lib/componentes/CorazonPerlas.svelte';
-  import { fotosSubidas, invitado, perlasDelCorazon, subidas } from '../lib/mock';
+  import Icono from '../lib/componentes/Icono.svelte';
+  import { PERLAS_DEL_CORAZON } from '../lib/corazon';
+  import { galeria } from '../lib/galeria.svelte';
+  import { invitado } from '../lib/invitado.svelte';
+  import { subidas, subirArchivos } from '../lib/subidas.svelte';
 
   const RETRASO = 500; // ms antes de la primera perla nueva
   const PASO = 260; // ms entre perlas (igual que en CorazonPerlas)
 
-  let nombre = $derived(invitado.split(' ')[0]);
-  let total = $derived(fotosSubidas + subidas.length);
+  // Se fija al llegar: si la galería se actualiza mientras tanto, la animación no salta.
+  const nuevas = subidas.listas;
+  const total = Math.max(galeria.fotos.length, nuevas);
+  const nombre = invitado.primerNombre;
 
-  // El número del corazón sube al ritmo en que se encienden las perlas de Laura.
-  let cuenta = $state(fotosSubidas);
+  // Solo se animan las perlas que caben en el corazón; el número cuenta todas.
+  const perlasNuevas = Math.max(0, Math.min(nuevas, PERLAS_DEL_CORAZON - (total - nuevas)));
+
+  let cuenta = $state(total - nuevas);
 
   onMount(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || nuevas === 0) {
       cuenta = total;
       return;
     }
-    const relojes = subidas.map((_, i) =>
-      setTimeout(() => (cuenta = fotosSubidas + i + 1), RETRASO + i * PASO + 350),
+    const relojes = Array.from({ length: nuevas }, (_, i) =>
+      setTimeout(() => (cuenta = total - nuevas + i + 1), RETRASO + Math.min(i, perlasNuevas) * PASO + 350),
     );
     return () => relojes.forEach(clearTimeout);
   });
 </script>
 
 <main class="pantalla">
+  <header class="barra">
+    <a href="#inicio" class="atras" aria-label="Volver al inicio"><Icono nombre="atras" /></a>
+  </header>
+
   <section class="confirmacion">
     <CorazonPerlas
-      capacidad={perlasDelCorazon}
+      capacidad={PERLAS_DEL_CORAZON}
       encendidas={total}
-      nuevas={subidas.length}
+      nuevas={perlasNuevas}
       retraso={RETRASO}
       ancho={232}
     >
       <span class="cuenta" aria-label="{total} fotos en el corazón">{cuenta}</span>
     </CorazonPerlas>
 
-    <h1>¡Gracias, {nombre}!</h1>
-    <p class="mensaje">
-      Tus {subidas.length} fotos quedaron guardadas para Javier &amp; Patricia.
-    </p>
-    <p class="nota">Son las {subidas.length} perlas nuevas del corazón.</p>
+    <h1>{nombre ? `¡Gracias, ${nombre}!` : '¡Gracias!'}</h1>
+    {#if nuevas > 0}
+      <p class="mensaje">
+        {nuevas === 1 ? 'Tu foto quedó guardada' : `Tus ${nuevas} fotos quedaron guardadas`} para Javier &amp; Patricia.
+      </p>
+      <p class="nota">{nuevas === 1 ? 'Es la perla nueva del corazón.' : `Son las ${nuevas} perlas nuevas del corazón.`}</p>
+      {#if !nombre}
+        <a class="con-nombre" href="#inicio">Escribir mi nombre para las próximas fotos</a>
+      {/if}
+    {:else}
+      <p class="mensaje">Cada foto que subas se vuelve una perla del corazón de Javier &amp; Patricia.</p>
+    {/if}
   </section>
 
   <div class="acciones">
-    <Boton icono="camara" href="#subiendo">Subir más fotos</Boton>
+    <Boton icono="camara" onarchivos={subirArchivos}>Subir más fotos</Boton>
     <Boton variante="marco" icono="galeria" href="#galeria">Ver la galería</Boton>
   </div>
 </main>
@@ -55,8 +74,34 @@
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
-    padding: calc(var(--e-4) + env(safe-area-inset-top)) var(--margen)
+    padding: calc(var(--e-3) + env(safe-area-inset-top)) var(--margen)
       calc(var(--e-5) + env(safe-area-inset-bottom));
+  }
+
+  .barra {
+    margin: 0 0 0 -12px;
+  }
+
+  .atras {
+    display: grid;
+    place-items: center;
+    width: var(--toque);
+    height: var(--toque);
+    border-radius: var(--r-redondo);
+  }
+
+  .con-nombre {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--toque);
+    margin-top: var(--e-2);
+    color: var(--tinta);
+    font-size: var(--t-dato);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--rosa);
+    text-underline-offset: 4px;
+    animation: llegar 600ms 500ms var(--salida) both;
   }
 
   .confirmacion {
@@ -120,7 +165,8 @@
   @media (prefers-reduced-motion: reduce) {
     h1,
     .mensaje,
-    .nota {
+    .nota,
+    .con-nombre {
       animation: none;
     }
   }

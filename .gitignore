@@ -41,3 +41,6 @@ lerna-debug.log*
 docs/*.jpeg
 docs/*.jpg
 docs/*.png
+
+# R2 simulado de desarrollo (fotos de prueba)
+.r2-simulado/

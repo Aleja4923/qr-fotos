@@ -9,11 +9,37 @@
     /** Pone el ícono después del texto (por ejemplo, la flecha de "Siguiente"). */
     iconoDespues?: boolean;
     href?: string;
+    /** Con href: descarga el enlace en vez de abrirlo. */
+    descargar?: boolean;
     onclick?: () => void;
+    deshabilitado?: boolean;
+    /**
+     * Convierte el botón en el selector de fotos y videos del celular. Sin `capture`
+     * (dejaría solo la cámara) y sin image/heic (Safari pasaría los JPG a HEIC).
+     */
+    onarchivos?: (archivos: File[]) => void;
     children: Snippet;
   }
 
-  let { variante = 'primario', icono, iconoDespues = false, href, onclick, children }: Props = $props();
+  let {
+    variante = 'primario',
+    icono,
+    iconoDespues = false,
+    href,
+    descargar = false,
+    onclick,
+    deshabilitado = false,
+    onarchivos,
+    children,
+  }: Props = $props();
+
+  function alElegir(evento: Event & { currentTarget: HTMLInputElement }) {
+    const entrada = evento.currentTarget;
+    const archivos = [...(entrada.files ?? [])];
+    // Se limpia para poder elegir las mismas fotos otra vez si hace falta.
+    entrada.value = '';
+    if (archivos.length) onarchivos?.(archivos);
+  }
 </script>
 
 {#snippet contenido()}
@@ -22,10 +48,15 @@
   {#if icono && iconoDespues}<Icono nombre={icono} />{/if}
 {/snippet}
 
-{#if href}
-  <a class={['boton', variante]} {href}>{@render contenido()}</a>
+{#if onarchivos}
+  <label class={['boton', 'selector', variante]}>
+    <input type="file" accept="image/*,video/*" multiple onchange={alElegir} />
+    {@render contenido()}
+  </label>
+{:else if href}
+  <a class={['boton', variante]} {href} download={descargar ? '' : undefined}>{@render contenido()}</a>
 {:else}
-  <button type="button" class={['boton', variante]} {onclick}>{@render contenido()}</button>
+  <button type="button" class={['boton', variante]} {onclick} disabled={deshabilitado}>{@render contenido()}</button>
 {/if}
 
 <style>
@@ -54,6 +85,26 @@
 
   .boton:active {
     transform: scale(0.97);
+  }
+
+  .boton:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+  }
+
+  /* La entrada queda invisible pero enfocable; el foco se dibuja en el botón. */
+  .selector input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .selector:focus-within {
+    outline: 2px solid var(--foco, var(--tinta));
+    outline-offset: 3px;
   }
 
   .primario {

@@ -1,47 +1,106 @@
-# Svelte + TS + Vite
+# QR de fotos — 30 Aniversario Javier & Patricia
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Página móvil para que los invitados suban fotos y videos (en calidad original) a Cloudflare R2
+y vean una galería compartida. Llegan desde un QR por mesa: `https://.../?mesa=5`.
 
-## Recommended IDE Setup
+**Estado:** el frontend está terminado y funciona contra un backend **simulado**
+(`dev/r2-simulado.ts`). Falta el backend real: un Worker de Cloudflare + R2 que cumpla el
+mismo contrato descrito abajo.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Correr el frontend
 
-## Need an official Svelte framework?
-
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
-
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install
+npm run dev          # http://localhost:5173/?mesa=5
+npm run check        # tipos (svelte-check + tsc)
+npm run build        # genera dist/ (estático)
 ```
+
+- Pantallas por hash: `#inicio`, `#subiendo`, `#listo`, `#galeria`, `#foto/<id>`.
+- El simulador guarda lo subido en `.r2-simulado/` (ignorado por git).
+- Para probar mala señal: `QR_FALLOS=0.3 QR_LENTO=400 npm run dev`
+  (30 % de subidas fallan con 500; cada petición a R2 tarda 400 ms).
+- Para verlo en el celular: `npm run dev -- --host` y abrir la IP "Network" en el mismo wifi.
+
+Stack: Vite + Svelte 5 + TypeScript, Uppy 6 (`@uppy/aws-s3` con `signRequest`, sin Dashboard).
+
+## Contrato con el backend
+
+La fuente de verdad es **`src/lib/api.ts`** (tipos) y **`dev/r2-simulado.ts`** (implementación
+de referencia que ya funciona). El Worker debe responder las mismas rutas en el mismo dominio
+que sirve el frontend (`dist/` como static assets).
+
+### Claves de R2
+
+Todas las claves deben cumplir:
+
+```
+^(mesa-\d{2}|sin-mesa)\/(original|mini)\/[0-9a-f-]{36}\.[a-z0-9]{2,5}$
+```
+
+Ejemplo: `mesa-05/original/3f1c...-....jpg` y su miniatura `mesa-05/mini/<otro-uuid>.jpg`
+(JPEG de 400 px hecho en el celular). Rechazar con 400 cualquier otra clave.
+
+### `POST /api/firmar`
+
+Uppy pide una URL firmada por cada operación S3 (PUT simple, iniciar multipart, subir parte,
+listar partes, completar, abortar). Cuerpo: el `PresignableRequest` de Uppy
+(`{ method, key, uploadId?, partNumber?, ... }`).
+
+Respuesta: `{ "url": "https://<cuenta>.r2.cloudflarestorage.com/<bucket>/<clave>?X-Amz-..." }`
+
+- La URL debe ser **absoluta** (Uppy hace `new URL(url)`).
+- Firmar con las llaves S3 de R2 (por ejemplo con `aws4fetch`). Las llaves van **solo** en
+  `wrangler secret`, nunca en el código.
+- El bucket necesita **CORS** para el dominio del sitio: métodos `PUT, POST, GET, DELETE, HEAD`,
+  cabeceras permitidas `*` y **`ExposeHeaders: ["ETag"]`** (sin ETag fallan las subidas por partes).
+
+### `POST /api/fotos`
+
+Registra una foto después de subir el original (y la miniatura). Cuerpo (`NuevaFoto`):
+
+```json
+{ "id": "uuid", "tipo": "foto|video", "clave": "...", "claveMini": "...|null",
+  "mesa": 5, "autor": "Ana|null", "ancho": 4032, "alto": 3024, "duracion": null }
+```
+
+- 400 si alguna clave no cumple el patrón; 409 si el original no existe en R2.
+- **Idempotente por `id`**: si ya existe, devolver la misma foto con 200 (el celular reintenta).
+- Respuesta 201: la `Foto` pública (ver abajo). `hora` la pone el servidor (ISO 8601).
+- `autor` recortado a 60 caracteres.
+
+### `GET /api/galeria?desde=<iso>`
+
+```json
+{ "fotos": [Foto, ...], "ahora": "2026-11-09T20:00:00.000Z" }
+```
+
+- Más recientes primero. Con `desde`, solo las que tengan `hora > desde`.
+- `ahora` es la hora del servidor; el frontend la manda como `desde` en la siguiente consulta
+  (consulta cada 20–30 s).
+
+### Forma de `Foto`
+
+```json
+{ "id": "uuid", "tipo": "foto", "mini": "/url-miniatura|null", "url": "/url-para-ver",
+  "descarga": "/url-que-descarga", "mesa": 5, "autor": "Ana", "hora": "ISO",
+  "ancho": 4032, "alto": 3024, "duracion": null }
+```
+
+- `url` y `mini`: se usan en `<img>`/`<video>`. Para videos hay que soportar **`Range`**
+  (Safari no los reproduce sin 206).
+- `descarga`: debe responder con `Content-Disposition: attachment` (el simulador usa
+  `javier-y-patricia-<archivo>`). Hoy descarga el original; pendiente confirmar si debe ser
+  una versión más liviana.
+
+## Pendiente
+
+- Worker de Cloudflare + R2 (lo de arriba) y reemplazar `dev/r2-simulado.ts` en `vite.config.ts`
+  por `@cloudflare/vite-plugin`.
+- Panel privado (contraseña, ocultar, borrar): sin diseñar todavía.
+
+## Diseño
+
+`DESIGN.md`, `PRODUCT.md` y `CLAUDE.md` describen la dirección visual y las reglas del producto.
+Nota: `DESIGN.md` todavía menciona Montserrat; las fuentes reales son Jost, Cormorant Garamond,
+Bodoni Moda y Pinyon Script (ver `src/styles/tokens.css`).
